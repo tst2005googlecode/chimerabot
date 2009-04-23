@@ -36,7 +36,7 @@ function slice(inline)
 	retable.target = chunked[3] or ""
 	
 	if retable.args > 0 then end
-	print(inline)
+	
 	for foo = 4, (retable.args + 3), 1 do
 		
 		table.insert(retable,chunked[foo])
@@ -57,11 +57,12 @@ end
 
 function join(tojoin)
 	echo(ctcp_color(12) .. "== Joining " .. tojoin)
+	print("== Joining " .. tojoin)
 	push('JOIN ' .. tojoin)
 end
 
 function die()
-    print("Oshi...")
+    print("== Shutting down...")
 	echo(ctcp_color(4) .. "== Shutting down...")
 	tcpsock:shutdown()
 	alive = false
@@ -88,7 +89,7 @@ function handle_cmd(inline, targ, sourc)
 	command, inline = lop(inline)
 	if command == "" then command = inline end
 	command = string.sub(command,2)
-	print("Com:" .. command)
+
 	for i,v in ipairs(reaction) do
 		if command == reaction[i].command then
 			safetorun = true
@@ -100,8 +101,7 @@ function handle_cmd(inline, targ, sourc)
 			end
 			
 			if safetorun == true then 
-			
-				print("Found match at " .. i)
+				print("== " .. mask_to_nick(source) .. " executed " .. command .. ".")
 				arglist = {}
 				for x=1,reaction[i].args,1 do
 					newarg, inline = lop(inline)
@@ -127,8 +127,8 @@ function parsechat(inline, targ, sourc)
 	target = targ
 	source = sourc
 
---	function echo(apass) push("PRIVMSG " .. target .. " " .. apass) end
-	if tonumber(noisy) == 1 then
+	--Process the stuff in chat[]
+	if tonumber(noisy) == 1 then  
 		for i,v in ipairs(chat) do
 			temp = string.find(inline, v.trigger)
 			if temp then
@@ -138,20 +138,25 @@ function parsechat(inline, targ, sourc)
 				if v.place == "start" and temp == 1 then
 					echo(v.reply)
 				end
-			
 			end
 		end
 	end
 	
+	--We should move this to a better place.
 	if string.sub(inline,1,1) == ctcp.norm then
-		print(inline)
+		
 		if string.sub(inline,2,8) == "VERSION" then
 			print("VERSION from " .. source)
 			push("NOTICE " .. mask_to_nick(source) .. " " .. ctcp.norm .. "VERSION NewbLucks Chimera v0.001 on LuaPlus 5.1" .. ctcp.norm)
 		end
 
+		if string.sub(inline,2,5) == "PING" then
+			print("PING from " .. source)
+			push("NOTICE " .. mask_to_nick(source) .. " " .. inline)
+		end
+		
 	end
-
+	
 	for i,v in ipairs(hook_list) do	if v.target == "parse_chat" then v.link(inline) end end --hook caller
 
 end
@@ -180,6 +185,7 @@ function do_auth(pass)
 
 	if pass == masterpass then 
 		table.insert(authlist,mask_to_end(source)) 
+		print("== " .. mask_to_nick(source) .. " authorized.")
 		echo(ctcp_color(12) .. "== " .. mask_to_nick(source) .. " authorized.")
 	else
 		kick(target, mask_to_nick(source), "Nice try fag lol")
@@ -189,6 +195,7 @@ end
 
 function force_auth(nick)
 	table.insert(authlist,nick) 
+	print("== " .. nick .. " authorized.")
 	echo(ctcp_color(12) .. "== " .. nick .. " authorized.")
 end
 
@@ -209,6 +216,7 @@ function get_help(incmd)
 end
 
 function set_nick(nickn)
+	print("== Changing nick to " .. nickn)
 	push('NICK ' .. nickn)
 end
 

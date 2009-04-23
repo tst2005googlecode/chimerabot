@@ -5,12 +5,11 @@ timing.current = 0
 timing.last = 0
 
 function get_clock()
-	ctime = os.clock()
+	ctime = os.time()
 	return ctime
 end
 
 function set_timer(setname)
-	ctime = get_clock()
 	toadd = {name = setname, elapsed = 0, running = false}
 	table.insert(timer_list,toadd)
 end
@@ -58,7 +57,6 @@ end
 
 function set_trigger(cname, etafire, tolink, modetype)
 	print("set_trigger")
-	ctime = get_clock()
 	toadd = {name = cname, current = 0, target = tonumber(etafire), link = tolink, mode = modetype or "die"}
 	table.insert(trigger_list,toadd)
 end
@@ -83,8 +81,7 @@ end
 function handle_timing()
 	timing.last = timing.current
 	timing.current = get_clock()
-
-	delta = timing.current - timing.last
+	delta = os.difftime (timing.current, timing.last)
 
 	for i,v in ipairs(timer_list) do 
 		if v.running then timer_list[i].elapsed = timer_list[i].elapsed + delta end
@@ -101,6 +98,7 @@ function handle_timing()
 			
 		end
 	end
+	
 end
 
 function check_trigger ()

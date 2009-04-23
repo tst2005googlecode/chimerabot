@@ -76,9 +76,9 @@ function user_hook(indata)
 					whichway = "subtract"
 				else
 					if current =="o" then
-						if whichway == "add" then chandata[tchan][indata[index] ].mode = "op" end
-						if whichway == "subtract" then chandata[tchan][indata[index] ].mode = "none" end
-						if whichway == "oops" then print("oh fuck") end
+						if whichway == "add" then chandata[tchan][ indata[index] ].mode = "op" end
+						if whichway == "subtract" then chandata[tchan][ indata[index] ].mode = "none" end
+						if whichway == "oops" then print("Invalid mode operator detected.") end
 					end
 					index = index + 1
 				end
@@ -87,14 +87,12 @@ function user_hook(indata)
 		end	
 	end
 
-
 	if indata.command == "353" then --get userlist
 		fromchan = indata[2]
 		for chunk in string.gmatch(" " .. indata.text," [%a%d%p]+") do
 			chunk = string.sub(chunk,2)
 			optest = string.sub(chunk,1,1)
 			opmode = "none"
-			print(chunk)
 			if optest == "~" then opmode = "owner" end
 			if optest == "&" then opmode = "sop" end
 			if optest == "@" then opmode = "op" end
@@ -135,9 +133,10 @@ function user_hook(indata)
 		end
 	end
 	
-	if indata.command == "376" then push('JOIN #test2') end
+	if indata.command == "376" and join_on_connect then join(join_on_connect) end
 	
 	if indata.command == "433" then 
+		print("== Nick taken. Appending _")
 		nickname = nickname .. "_"
 		set_nick(nickname)
 		set_trigger("renick",10,function () nickname = string.sub(nickname,1,#nickname - 1); set_nick(nickname) end, "die")
