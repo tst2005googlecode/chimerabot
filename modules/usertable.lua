@@ -88,6 +88,11 @@ function user_hook(indata)
 	end
 
 	if indata.command == "353" then --get userlist
+		
+		--Im being a bit lazy about this block...  the only status we need to worry about for now is op.
+		--Later on when things like this are more critical to the project, I will make it worry about the other modes.
+
+
 		fromchan = indata[2]
 		for chunk in string.gmatch(" " .. indata.text," [%a%d%p]+") do
 			chunk = string.sub(chunk,2)
