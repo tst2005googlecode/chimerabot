@@ -98,6 +98,8 @@ function handle_timing()
 			
 		end
 	end
+
+	for i,v in ipairs(hook_list) do	if v.target == "on_timing" then v.link(timing.current, delta) end end --Run our on_timing hooks
 	
 end
 

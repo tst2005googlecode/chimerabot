@@ -156,48 +156,52 @@ chat[2] = {	trigger = "o/" ,place = "start", reply = "o/*\\o"}
 --Make the socket non-blocking so we can use magic like timers and the such.
 tcpsock:settimeout(0)
 
-while (alive) do
-	--Grab a line
-	inlin,err = tcpsock:receive('*l')
-	
-	--If content exists, lets process it.
-	if inlin ~= nil then 
+function run_bot()
+	while (alive) do
+		--Grab a line
+		inlin,err = tcpsock:receive('*l')
 		
-		--Logs the bot in, will make less hackish later.
-		if string.find(inlin, "*** Found your hostname") then
-			push("USER " .. nickname .. " 8 * :" .. nickname)
-			push("NICK " .. nickname)
-			print("==Logged in==")
-		end
-		--Chop line up into components.
-		chop = slice(inlin)
-		
-		if verbose_mode == 1 then print(inline) end
-		
-		--Will relocate this later.  Keeps bot alive on server.
-		if chop.source == "PING" then 
-			push("PONG " .. chop.text) 
-		end
-		
-		if string.sub(chop.text,1,1) == "!" then 
-			handle_cmd(chop.text, chop.target, chop.source) 
-		else
-			parsechat(chop.text, chop.target, chop.source)
-		end
-
-		for i,v in ipairs(hook_list) do	if v.target == "parse_raw" then v.link(chop) end end --hook caller
-	
-	else
-		if err == 'closed' then 
-			print('====DISCONNECTED====')
-
-			block_till_connect()
+		--If content exists, lets process it.
+		if inlin ~= nil then 
 			
+			--Logs the bot in, will make less hackish later.
+			if string.find(inlin, "*** Found your hostname") then
+				push("USER " .. nickname .. " 8 * :" .. nickname)
+				push("NICK " .. nickname)
+				print("==Logged in==")
+			end
+			--Chop line up into components.
+			chop = slice(inlin)
+			
+			if verbose_mode == 1 then print(inline) end
+			
+			--Will relocate this later.  Keeps bot alive on server.
+			if chop.source == "PING" then 
+				push("PONG " .. chop.text) 
+			end
+			
+			if string.sub(chop.text,1,1) == "!" then 
+				handle_cmd(chop.text, chop.target, chop.source) 
+			else
+				parsechat(chop.text, chop.target, chop.source)
+			end
+
+			for i,v in ipairs(hook_list) do	if v.target == "parse_raw" then v.link(chop) end end --hook caller
+		
+		else
+			--Otherwise our connection got dumped.  If this is so, start handling it.
+			if err == 'closed' then 
+				print('====DISCONNECTED====')
+
+				block_till_connect()
+				
+			end
 		end
+		
+		
+		handle_timing()
+		inlin = nil
 	end
-	
-	
-	handle_timing()
-	inlin = nil
 end
 
+run_bot()
