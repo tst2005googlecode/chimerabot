@@ -2,10 +2,12 @@ END = "\r\n"
 socket = require("socket")
 tcpsock = socket.tcp()
 
+bot_path = "C:/Users/anthony/Code/Chimera/" --Path to bot dir. EDIT THIS YO
+
 server = "irc.toribash.com"
 nickname = "Chimera"
 masterpass = "9001"
-masterauth = "1337-BC651D7C.nctv.com"
+masterauth = "1337-70F103FE.dhcp.lds.al.charter.com"
 join_on_connect = "#test2"
 
 authlist = {}
@@ -20,6 +22,7 @@ verbose_mode = 0
 hook_list = {}
 module_list = {}
 module_list.current = nil
+
 
 --[[
 CTCP Stuff:
@@ -111,8 +114,9 @@ function load_module(mname)
 	module_list.current = mname
 	print("Loading module " .. mname .. "...")
 	module_list[module_list.current] = {}
+	local module_path = bot_path .. "modules/" .. mname .. ".lua"
 	
-	loadstr = "dofile('modules/" .. mname .. ".lua')"
+	loadstr = "dofile(module_path)"
 	callstate, callerror = pcall(loadstring(loadstr), function () end) 
 	if callstate == false then 
 		print("ERROR: ".. callerror)
