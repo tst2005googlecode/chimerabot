@@ -220,8 +220,20 @@ function set_nick(nickn)
 	push('NICK ' .. nickn)
 end
 
+function uptime()
+	echo( os.time() - startuptime .. " seconds uptime." )
+end
+
+function list_auths()
+	for i = 1, table.getn( authlist ) do
+		echo ( authlist[i] .. " is authed. \n" )
+	end
+end
+
 force_auth(masterauth)
 
+push_reaction("listauths",true,0,false,"function",list_auths,"!listauths - Prints every authed user.")
+push_reaction("uptime",false,0,false,"function",uptime,"!uptime - Outputs bot's uptime in seconds.")
 push_reaction("listcmd",false,0,false,"function",list_cmd,"!listcmd - Lists available commands.")
 push_reaction("leave",false,1,false,"dynamic","push('PART ' .. arglist[1])","!leave <channel> - Commands bot to leave given channel.")
 push_reaction("auth",false,1,false,"function",do_auth,"!auth <auth pass> - Authorizes yourself with bot for running priviledged commands.  Please PM this to the bot with /msg <botname> !auth <pass> so it is not revealed to other users.")

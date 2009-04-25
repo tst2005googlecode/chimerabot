@@ -5,10 +5,12 @@ tcpsock = socket.tcp()
 bot_path = "C:/Users/anthony/Code/Chimera/" --Path to bot dir. EDIT THIS YO
 
 server = "irc.toribash.com"
-nickname = "Chimera"
+nickname = "Chimera_"
 masterpass = "9001"
 masterauth = "1337-70F103FE.dhcp.lds.al.charter.com"
 join_on_connect = "#test2"
+
+startuptime = os.time()
 
 authlist = {}
 reaction = {}
@@ -114,7 +116,7 @@ function load_module(mname)
 	module_list.current = mname
 	print("Loading module " .. mname .. "...")
 	module_list[module_list.current] = {}
-	local module_path = bot_path .. "modules/" .. mname .. ".lua"
+	module_path = bot_path .. "modules/" .. mname .. ".lua"
 	
 	loadstr = "dofile(module_path)"
 	callstate, callerror = pcall(loadstring(loadstr), function () end) 
@@ -156,6 +158,7 @@ require_mod('advanced')
 chat = {}
 chat[1] = {	trigger = nickname,	place = "any", reply = "hmm?"}
 chat[2] = {	trigger = "o/" ,place = "start", reply = "o/*\\o"}
+chat[3] = {	trigger = "how do i shot web" ,place = "start", reply = "¯\\(°_o)/¯"}
 
 --Make the socket non-blocking so we can use magic like timers and the such.
 tcpsock:settimeout(0)
