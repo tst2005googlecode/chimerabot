@@ -4,19 +4,18 @@ scores = {}
 
 math.randomseed (os.clock())
 
-function quiz_echo(line) push("PRIVMSG " .. quiz.channel .. " " .. line) end
 set_timer("quiz_qq")
 
 function on_chat(line)
-	
+	print("afterinrun >" .. line)
 	if tonumber(quiz.mode) == 1 and target == quiz.channel and quiz.active == true then
 
 		if bank.current == 0 then  --fetch a new question
 			bank.current = math.random(#bank)
 			reset_timer("quiz_qq")
 
-			quiz_echo(ctcp_color(0,12) .. ctcp.underline .. 'Next question:')
-			quiz_echo(bank[bank.current].q)
+			echo(ctcp_color(0,12) .. ctcp.underline .. 'Next question:',quiz.channel)
+			echo(bank[bank.current].q,quiz.channel)
 
 			for i = 1,#bank[bank.current].a,1 do
 				if string.sub(bank[bank.current].a,i,i) ~= ' ' then 
@@ -34,21 +33,22 @@ function on_chat(line)
 			pause_timer("quiz_qq")
 			nickwin = mask_to_nick(source)
 			wintime = math.floor(get_timer("quiz_qq"))
-			quiz_echo(ctcp_color(0,12) .. nickwin .. ' answered correctly with \'' .. bank[bank.current].a .. '\' in ' .. wintime .. ' seconds!')
+			echo(ctcp_color(0,12) .. nickwin .. ' answered correctly with \'' .. bank[bank.current].a .. '\' in ' .. wintime .. ' seconds!',quiz.channel)
 			if scores[nickwin] then scores[nickwin] = scores[nickwin] + 1 else scores[nickwin] = 1 end
-			quiz_echo(nickwin .. ' currently has ' .. ctcp_color(0,12) .. ctcp.bold .. scores[nickwin] .. ctcp.plain .. ' points.')
+			echo(nickwin .. ' currently has ' .. ctcp_color(0,12) .. ctcp.bold .. scores[nickwin] .. ctcp.plain .. ' points.',quiz.channel)
 			bank.current = 0
 			reset_trigger("quiz_hint")
 			bank.hintout = ""
 		end
 				
 		if line == "hint" then give_hint() end
-		
+
 	end
 
 end
 
 function run_hint()
+	print("inrun")
 	on_chat("hint")
 end
 
@@ -56,13 +56,15 @@ end
 
 function give_hint()
 	reset_trigger("quiz_hint")
+	print("giving hint")
 	ans = bank[bank.current].a
 	if bank.hintout == ans then okgo = true else okgo = false end
 	while(okgo ~= true) do
 		spot = math.random(#ans)
 		if string.sub(bank.hintout,spot,spot) == "-" then 
 			bank.hintout = string.sub(bank.hintout,1,spot - 1) .. string.sub(ans,spot,spot) .. string.sub(bank.hintout,spot + 1)
-			quiz_echo(ctcp_color(9) .. 'Hint: ' .. ctcp.plain .. bank.hintout)
+			print("ipooped")
+			echo(ctcp_color(9) .. 'Hint: ' .. ctcp.plain .. bank.hintout,quiz.channel)
 			okgo = true
 		end
 	end
@@ -113,7 +115,7 @@ function set_quiz(arg)
 			if tonumber(arg) == 1 then 
 				quiz.mode = arg
 				quiz.channel = target
-				quiz_echo(ctcp_color(0,12) .. ctcp.underline .. "Quiz starting in 10 seconds!")
+				echo(ctcp_color(0,12) .. ctcp.underline .. "Quiz starting in 10 seconds!",quiz.channel)
 				start_timer("quiz_qq")
 				set_trigger("quiz_hint",5,run_hint,"reset") 
 				set_trigger("quiz_start",10,start_quiz,"die")
@@ -125,7 +127,7 @@ end
 function skip()
 	bank.current = 0
 	bank.hintout = ""
-	quiz_echo(ctcp_color(4) .. "Skipping current question.")
+	echo(ctcp_color(4) .. "Skipping current question.",quiz.channel)
 	on_chat("")
 end
 
@@ -138,8 +140,8 @@ function check_leader()
 			score = v 
 		end
 	end
-	quiz_echo(ctcp_color(4).. "=== " .. ctcp.plain .. "The current leader is " .. ctcp_color(0,12) .. name .. ctcp.plain	
-	     .. " with " .. ctcp_color(0,12) .. ctcp.bold .. score .. ctcp.plain .. " points! " .. ctcp_color(4) .. "===")
+	echo(ctcp_color(4).. "=== " .. ctcp.plain .. "The current leader is " .. ctcp_color(0,12) .. name .. ctcp.plain	
+	     .. " with " .. ctcp_color(0,12) .. ctcp.bold .. score .. ctcp.plain .. " points! " .. ctcp_color(4) .. "===",quiz.channel)
 end
 
 function get_score()
@@ -148,10 +150,10 @@ function get_score()
 	print("in")
 	if score ~= nil then
 		print("1")
-		quiz_echo(ctcp_color(4) .. "=== The score for ".. name .. " is " .. score .. " points. ===")
+		echo(ctcp_color(4) .. "=== The score for ".. name .. " is " .. score .. " points. ===",quiz.channel)
 	else
 		print("2")
-		quiz_echo(ctcp_color(4) .. "=== There is no score for ".. name .. ". ===")
+		echo(ctcp_color(4) .. "=== There is no score for ".. name .. ". ===",quiz.channel)
 	end
 	
 end

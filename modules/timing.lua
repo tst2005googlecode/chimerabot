@@ -81,7 +81,7 @@ end
 function handle_timing()
 	timing.last = timing.current
 	timing.current = get_clock()
-	delta = os.difftime (timing.current, timing.last)
+	delta = os.difftime(timing.current, timing.last)
 
 	for i,v in ipairs(timer_list) do 
 		if v.running then timer_list[i].elapsed = timer_list[i].elapsed + delta end
@@ -89,10 +89,12 @@ function handle_timing()
 
 --============================Triggers
 	for i,v in ipairs(trigger_list) do 
+		
 		trigger_list[i].current = trigger_list[i].current + delta
-				
 		if trigger_list[i].current >= trigger_list[i].target then
-			trigger_list[i].link()
+			print("running fire")
+			callstate, callerror = pcall(trigger_list[i].link(), function () end)
+			if callerror ~= nil then print(callerror) end
 			if v.mode == "reset" then trigger_list[i].current = 0
 			else table.remove(trigger_list,i) end
 			
@@ -103,7 +105,7 @@ function handle_timing()
 	
 end
 
-function check_trigger ()
+function check_trigger()
 	for i,v in ipairs(trigger_list) do 
 		print("=====")
 		print(v.name)

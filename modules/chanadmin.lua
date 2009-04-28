@@ -93,7 +93,6 @@ function ban_check(ontime)
 
 		end
 	end
-
 end
 
 
@@ -104,6 +103,7 @@ push_reaction("fop",true,1,false,"function",force_op,"!fop <username> - Adds spe
 push_reaction("rop",true,1,false,"function",fuck_op,"!rop <username> - Removes specified user from the auto-op list.")
 push_reaction("kick",true,2,true,"dynamic","kick(arglist[1],arglist[2],arglist[3])","!kick <channel> <nick> [message] - Kicks user from specified channel.")
 push_reaction("ban",true,6,false,"function",do_ban,"!ban <channel> <nick> <days> <hours> <mins> <secs> - Bans user for this long.")
+push_reaction("checkbans",true,0,false,"function",check_bans,"!checkban - Checks active bans.")
 
 add_hook("parse_raw", "chanadmin", chan_hook)
 add_hook("on_timing", "ban_check", ban_check)

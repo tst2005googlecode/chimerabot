@@ -2,15 +2,13 @@ END = "\r\n"
 socket = require("socket")
 tcpsock = socket.tcp()
 
-bot_path = "C:/Users/anthony/Code/Chimera/" --Path to bot dir. EDIT THIS YO
+bot_path = "" --Path to bot dir. EDIT THIS YO
 
 server = "irc.toribash.com"
-nickname = "Chimera_"
+nickname = "Chimera"
 masterpass = "9001"
-masterauth = "1337-70F103FE.dhcp.lds.al.charter.com"
+masterauth = "1337-BC651D7C.nctv.com"
 join_on_connect = "#test2"
-
-startuptime = os.time()
 
 authlist = {}
 reaction = {}
@@ -24,10 +22,11 @@ verbose_mode = 0
 hook_list = {}
 module_list = {}
 module_list.current = nil
+socket_list = {}
 
+alive = true
 
---[[
-CTCP Stuff:
+--[[CTCP Stuff:
 There is alot of misnomer here, but I don't feel like fixing yet.
 You can pass the ctcp_color function either a single color (sets only foreground)
 or two colors (sets fore and back).  The func returns the required string to 
@@ -58,6 +57,7 @@ function block_till_connect()
 		tcpsock:close()
 		tcpsock = nil
 		tcpsock = socket.tcp()
+		tcpsock:settimeout(5)
 		print("Attempting to connect (retry in 5 seconds)...")
 		result,err = tcpsock:connect(server, 6667) 
 		result = result or ""
@@ -67,6 +67,17 @@ function block_till_connect()
 		end
 		
 	end
+	tcpsock:settimeout(0)
+	--------------------Need this---------------------------
+	require_mod('corefunc')
+	require_mod('timing')
+	require_mod('usertable')
+	---I want this to load on startup because I'm lazy------
+	require_mod('chanadmin')
+	require_mod('advanced')
+	require_mod('web')
+	--------------------------------------------------------
+
 
 end
 
@@ -117,9 +128,10 @@ function load_module(mname)
 	print("Loading module " .. mname .. "...")
 	module_list[module_list.current] = {}
 	module_path = bot_path .. "modules/" .. mname .. ".lua"
-	
 	loadstr = "dofile(module_path)"
+
 	callstate, callerror = pcall(loadstring(loadstr), function () end) 
+	
 	if callstate == false then 
 		print("ERROR: ".. callerror)
 		echo(ctcp_color(1,4) .. ctcp.underline ..  "ERROR:"	.. ctcp.plain .. " " .. callerror) 
@@ -140,75 +152,69 @@ function require_mod(modname)
 	end
 end
 
---Set the alive var and connect to the server.
-alive = true
-block_till_connect()
 
---------------------Need this---------------------------
-require_mod('corefunc')
-require_mod('timing')
-require_mod('usertable')
----I want this to load on startup because I'm lazy------
-require_mod('chanadmin')
-require_mod('advanced')
---------------------------------------------------------
+--Main logic loop here
+function run_logic()
+	
+	while(alive==true) do
+		run_bot()
+		handle_timing()
+		for i,v in ipairs(hook_list) do	if v.target == "cycle" then v.link() end end --hook caller
+	end
+	
+end
+
 
 --I will make this stuff useful later.  For now, it is not worth
 --looking at.
 chat = {}
 chat[1] = {	trigger = nickname,	place = "any", reply = "hmm?"}
 chat[2] = {	trigger = "o/" ,place = "start", reply = "o/*\\o"}
-chat[3] = {	trigger = "how do i shot web" ,place = "start", reply = "¯\\(°_o)/¯"}
 
---Make the socket non-blocking so we can use magic like timers and the such.
-tcpsock:settimeout(0)
-
+--Process all the IRC stuff.
 function run_bot()
-	while (alive) do
-		--Grab a line
-		inlin,err = tcpsock:receive('*l')
+	--Grab a line
+	
+	inlin,err = tcpsock:receive('*l')
+	
+	--If content exists, lets process it.
+	if inlin ~= nil then 
 		
-		--If content exists, lets process it.
-		if inlin ~= nil then 
-			
-			--Logs the bot in, will make less hackish later.
-			if string.find(inlin, "*** Found your hostname") then
-				push("USER " .. nickname .. " 8 * :" .. nickname)
-				push("NICK " .. nickname)
-				print("==Logged in==")
-			end
-			--Chop line up into components.
-			chop = slice(inlin)
-			
-			if verbose_mode == 1 then print(inline) end
-			
-			--Will relocate this later.  Keeps bot alive on server.
-			if chop.source == "PING" then 
-				push("PONG " .. chop.text) 
-			end
-			
-			if string.sub(chop.text,1,1) == "!" then 
-				handle_cmd(chop.text, chop.target, chop.source) 
-			else
-				parsechat(chop.text, chop.target, chop.source)
-			end
-
-			for i,v in ipairs(hook_list) do	if v.target == "parse_raw" then v.link(chop) end end --hook caller
+		--Logs the bot in, will make less hackish later.
+		if string.find(inlin, "*** Found your hostname") then
+			push("USER " .. nickname .. " 8 * :" .. nickname)
+			push("NICK " .. nickname)
+			print("==Logged in==")
+		end
+		--Chop line up into components.
+		chop = slice(inlin)
 		
-		else
-			--Otherwise our connection got dumped.  If this is so, start handling it.
-			if err == 'closed' then 
-				print('====DISCONNECTED====')
-
-				block_till_connect()
-				
-			end
+		if verbose_mode == 1 then print(inline) end
+		
+		--Will relocate this later.  Keeps bot alive on server.
+		if chop.source == "PING" then 
+			push("PONG " .. chop.text) 
 		end
 		
-		
-		handle_timing()
-		inlin = nil
+		if string.sub(chop.text,1,1) == "!" then 
+			handle_cmd(chop.text, chop.target, chop.source) 
+		else
+			parsechat(chop.text, chop.target, chop.source)
+		end
+
+		for i,v in ipairs(hook_list) do	if v.target == "parse_raw" then v.link(chop) end end --hook caller
+	
+	else
+		--Otherwise our connection got dumped.  If this is so, start handling it.
+		if err == 'closed' then 
+			print('====DISCONNECTED====')
+			block_till_connect()
+		end
 	end
+	
+	inlin = nil
 end
 
-run_bot()
+--Bootstrap stuff.
+block_till_connect()
+run_logic()
