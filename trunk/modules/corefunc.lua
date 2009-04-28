@@ -50,9 +50,7 @@ function lop(inline)
 	tochop = inline
 	i = string.find(inline," ")
 	if i then return string.sub(inline,1,i-1), string.sub(inline, i+1) end
-	
 	return inline,""
-
 end
 
 function join(tojoin)
@@ -147,7 +145,7 @@ function parsechat(inline, targ, sourc)
 		
 		if string.sub(inline,2,8) == "VERSION" then
 			print("VERSION from " .. source)
-			push("NOTICE " .. mask_to_nick(source) .. " " .. ctcp.norm .. "VERSION NewbLucks Chimera v0.001 on LuaPlus 5.1" .. ctcp.norm)
+			push("NOTICE " .. mask_to_nick(source) .. " " .. ctcp.norm .. "VERSION NewbLuck's Chimera v0.05 on LuaPlus 5.1" .. ctcp.norm)
 		end
 
 		if string.sub(inline,2,5) == "PING" then
@@ -218,22 +216,11 @@ end
 function set_nick(nickn)
 	print("== Changing nick to " .. nickn)
 	push('NICK ' .. nickn)
-end
-
-function uptime()
-	echo( os.time() - startuptime .. " seconds uptime." )
-end
-
-function list_auths()
-	for i = 1, table.getn( authlist ) do
-		echo ( authlist[i] .. " is authed. \n" )
-	end
+	nickname = nickn
 end
 
 force_auth(masterauth)
 
-push_reaction("listauths",true,0,false,"function",list_auths,"!listauths - Prints every authed user.")
-push_reaction("uptime",false,0,false,"function",uptime,"!uptime - Outputs bot's uptime in seconds.")
 push_reaction("listcmd",false,0,false,"function",list_cmd,"!listcmd - Lists available commands.")
 push_reaction("leave",false,1,false,"dynamic","push('PART ' .. arglist[1])","!leave <channel> - Commands bot to leave given channel.")
 push_reaction("auth",false,1,false,"function",do_auth,"!auth <auth pass> - Authorizes yourself with bot for running priviledged commands.  Please PM this to the bot with /msg <botname> !auth <pass> so it is not revealed to other users.")
