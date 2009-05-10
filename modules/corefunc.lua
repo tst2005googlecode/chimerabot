@@ -139,11 +139,7 @@ function core.parsechat(inline, targ, sourc)
 		
 		if string.sub(inline,2,8) == "VERSION" then
 			print("VERSION from " .. source)
-<<<<<<< .mine
 			push("NOTICE " .. mask_to_nick(source) .. " " .. ctcp.norm .. "VERSION NewbLuck's Chimera v0.05 on luasockets v2.0.2" .. ctcp.norm)
-=======
-			push("NOTICE " .. mask_to_nick(source) .. " " .. ctcp.norm .. "VERSION NewbLuck's Chimera v0.05 on LuaPlus 5.1" .. ctcp.norm)
->>>>>>> .r9
 		end
 
 		if string.sub(inline,2,5) == "PING" then
@@ -224,7 +220,6 @@ function core.set_nick(nickn)
 	nickname = nickn
 end
 
-<<<<<<< .mine
 function core.uptime()
 	echo( os.time() - startuptime .. " seconds uptime." )
 end
@@ -237,11 +232,8 @@ function core.list_auths()
 	echo (ctcp_color(12) .. "Authorized users: " .. ausers)
 end
 
-=======
->>>>>>> .r9
 table.insert(authlist,masterauth)
 
-<<<<<<< .mine
 push_reaction("listauths",true,0,false,"function",core.list_auths,"!listauths - Prints every authed user.")
 push_reaction("uptime",false,0,false,"function",core.uptime,"!uptime - Outputs bot's uptime in seconds.")
 push_reaction("listcmd",false,0,false,"function",core.list_cmd,"!listcmd - Lists available commands.")
@@ -250,14 +242,6 @@ push_reaction("auth",false,1,false,"function",core.do_auth,"!auth <auth pass> - 
 push_reaction("fauth",true,1,false,"function",core.force_auth,"!fauth <username> - Authorizes specified user with the bot.")
 push_reaction("die",true,0,false,"function",core.die,"!die - Disconnects the bot from the server.")
 push_reaction("join",true,1,false,"function",core.join,"!join <channel> - Tells the bot to join the specified channel.")
-=======
-push_reaction("listcmd",false,0,false,"function",list_cmd,"!listcmd - Lists available commands.")
-push_reaction("leave",false,1,false,"dynamic","push('PART ' .. arglist[1])","!leave <channel> - Commands bot to leave given channel.")
-push_reaction("auth",false,1,false,"function",do_auth,"!auth <auth pass> - Authorizes yourself with bot for running priviledged commands.  Please PM this to the bot with /msg <botname> !auth <pass> so it is not revealed to other users.")
-push_reaction("fauth",true,1,false,"function",force_auth,"!fauth <username> - Authorizes specified user with the bot.")
-push_reaction("die",true,0,false,"function",die,"!die - Disconnects the bot from the server.")
-push_reaction("join",true,1,false,"function",join,"!join <channel> - Tells the bot to join the specified channel.")
->>>>>>> .r9
 push_reaction("chatterbox",true,1,false,"dynamic","noisy = arglist[1]","!chatterbox <0|1> - Toggles random bot chat (unimplemented)")
 push_reaction("rename",true,1,false,"function",core.set_nick,"!rename <nickname> - Renames the bot to specified nick.")
 push_reaction("setpass",true,1,false,"dynamic","masterpass = arglist[1]")
