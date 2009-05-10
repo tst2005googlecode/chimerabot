@@ -1,9 +1,12 @@
-reaction = nil
-reaction = {}
-print("Loading functions.")
-module_list['dynamic'] = {}
+require_mod('usertable')
 
-function slice(inline)
+allocate_namespace("core")
+core = {}
+
+
+print("Loading functions.")
+
+function core.slice(inline)
 	
 	retable = {}
 	retable.args = 0
@@ -46,45 +49,36 @@ function slice(inline)
 
 end
 
-function lop(inline)
+function core.lop(inline)
 	tochop = inline
 	i = string.find(inline," ")
 	if i then return string.sub(inline,1,i-1), string.sub(inline, i+1) end
 	return inline,""
 end
 
-function join(tojoin)
+function core.join(tojoin)
 	echo(ctcp_color(12) .. "== Joining " .. tojoin)
 	print("== Joining " .. tojoin)
 	push('JOIN ' .. tojoin)
 end
 
-function die()
+function core.leave(toleave)
+	echo(ctcp_color(12) .. "== Leaving " .. toleave)
+	print("== Leaving " .. toleave)
+	push('PART ' .. toleave)
+end
+
+function core.die()
     print("== Shutting down...")
 	echo(ctcp_color(4) .. "== Shutting down...")
 	tcpsock:shutdown()
 	alive = false
 end
 
-function push_reaction(comd, needauth, argnum, passlft, cmdtyp, exestring, help)
-	toadd = {}
-	toadd = {
-		command = comd,
-		args = argnum,
-		passleft = passlft,
-		cmdtype = cmdtyp,
-		link = exestring,
-		auth = needauth
-		}
-	help = help or "No help available for this command."
-	table.insert(reaction,toadd)
-	module_list[module_list.current][comd] = help
-end
-
-function handle_cmd(inline, targ, sourc)
+function core.handle_cmd(inline, targ, sourc)
 	target = targ
 	source = sourc
-	command, inline = lop(inline)
+	command, inline = core.lop(inline)
 	if command == "" then command = inline end
 	command = string.sub(command,2)
 
@@ -102,7 +96,7 @@ function handle_cmd(inline, targ, sourc)
 				print("== " .. mask_to_nick(source) .. " executed " .. command .. ".")
 				arglist = {}
 				for x=1,reaction[i].args,1 do
-					newarg, inline = lop(inline)
+					newarg, inline = core.lop(inline)
 					table.insert(arglist, newarg)
 				end
 				if reaction[i].passleft then table.insert(arglist, inline) end
@@ -121,7 +115,7 @@ function handle_cmd(inline, targ, sourc)
 
 end
 
-function parsechat(inline, targ, sourc)
+function core.parsechat(inline, targ, sourc)
 	target = targ
 	source = sourc
 
@@ -145,7 +139,11 @@ function parsechat(inline, targ, sourc)
 		
 		if string.sub(inline,2,8) == "VERSION" then
 			print("VERSION from " .. source)
+<<<<<<< .mine
+			push("NOTICE " .. mask_to_nick(source) .. " " .. ctcp.norm .. "VERSION NewbLuck's Chimera v0.05 on luasockets v2.0.2" .. ctcp.norm)
+=======
 			push("NOTICE " .. mask_to_nick(source) .. " " .. ctcp.norm .. "VERSION NewbLuck's Chimera v0.05 on LuaPlus 5.1" .. ctcp.norm)
+>>>>>>> .r9
 		end
 
 		if string.sub(inline,2,5) == "PING" then
@@ -159,17 +157,19 @@ function parsechat(inline, targ, sourc)
 
 end
 
-function list_cmd()
+function core.list_cmd()
 	sendto = mask_to_nick(source)
 	todump = ''
 	echo(ctcp_color(9) .. ctcp.bold .. "-- For more information on a command, use !help <command> --", sendto)
 	for modname, mdata in pairs(module_list) do
 		todump = ""
 		for cname,htext in pairs(mdata) do
-			for k,v in pairs(reaction) do 
-				if v.command == cname and v.auth == true then todump = todump .. ctcp_color(4) .. "*" .. ctcp.plain end
-			end	
-			todump = todump .. cname .. " "
+			if cname ~= "namespace" then
+				for k,v in pairs(reaction) do 
+					if v.command == cname and v.auth == true then todump = todump .. ctcp_color(4) .. "*" .. ctcp.plain end
+				end	
+				todump = todump .. cname .. " "
+			end
 		end
 		if todump ~= "" then
 			echo(ctcp_color(9) .. ctcp.underline .. "-- In module " .. modname .. " --", sendto)
@@ -179,7 +179,7 @@ function list_cmd()
 	
 end
 
-function do_auth(pass)
+function core.do_auth(pass)
 
 	if pass == masterpass then 
 		table.insert(authlist,mask_to_end(source)) 
@@ -191,13 +191,18 @@ function do_auth(pass)
 
 end
 
-function force_auth(nick)
-	table.insert(authlist,nick) 
-	print("== " .. nick .. " authorized.")
-	echo(ctcp_color(12) .. "== " .. nick .. " authorized.")
+function core.force_auth(nick)
+	chan = target
+	local v = find_user(nick,chan)
+	if v then
+		table.insert(authlist,v.mask)
+		print("== " .. v.mask .. " authorized.")
+		echo(ctcp_color(12) .. "== " .. v.mask .. " authorized.")
+	else
+	end
 end
 
-function get_help(incmd)
+function core.get_help(incmd)
 	found = false
 	for modname, mdata in pairs(module_list) do
 		for cname,htext in pairs(mdata) do
@@ -213,23 +218,49 @@ function get_help(incmd)
 	end
 end
 
-function set_nick(nickn)
+function core.set_nick(nickn)
 	print("== Changing nick to " .. nickn)
 	push('NICK ' .. nickn)
 	nickname = nickn
 end
 
-force_auth(masterauth)
+<<<<<<< .mine
+function core.uptime()
+	echo( os.time() - startuptime .. " seconds uptime." )
+end
 
+function core.list_auths()
+	local ausers = ""
+	for i,v in ipairs(authlist) do
+		ausers = ausers .. " | " .. v
+	end
+	echo (ctcp_color(12) .. "Authorized users: " .. ausers)
+end
+
+=======
+>>>>>>> .r9
+table.insert(authlist,masterauth)
+
+<<<<<<< .mine
+push_reaction("listauths",true,0,false,"function",core.list_auths,"!listauths - Prints every authed user.")
+push_reaction("uptime",false,0,false,"function",core.uptime,"!uptime - Outputs bot's uptime in seconds.")
+push_reaction("listcmd",false,0,false,"function",core.list_cmd,"!listcmd - Lists available commands.")
+push_reaction("leave",false,1,false,"function",core.leave,"!leave <channel> - Commands bot to leave given channel.")
+push_reaction("auth",false,1,false,"function",core.do_auth,"!auth <auth pass> - Authorizes yourself with bot for running priviledged commands.  Please PM this to the bot with /msg <botname> !auth <pass> so it is not revealed to other users.")
+push_reaction("fauth",true,1,false,"function",core.force_auth,"!fauth <username> - Authorizes specified user with the bot.")
+push_reaction("die",true,0,false,"function",core.die,"!die - Disconnects the bot from the server.")
+push_reaction("join",true,1,false,"function",core.join,"!join <channel> - Tells the bot to join the specified channel.")
+=======
 push_reaction("listcmd",false,0,false,"function",list_cmd,"!listcmd - Lists available commands.")
 push_reaction("leave",false,1,false,"dynamic","push('PART ' .. arglist[1])","!leave <channel> - Commands bot to leave given channel.")
 push_reaction("auth",false,1,false,"function",do_auth,"!auth <auth pass> - Authorizes yourself with bot for running priviledged commands.  Please PM this to the bot with /msg <botname> !auth <pass> so it is not revealed to other users.")
 push_reaction("fauth",true,1,false,"function",force_auth,"!fauth <username> - Authorizes specified user with the bot.")
 push_reaction("die",true,0,false,"function",die,"!die - Disconnects the bot from the server.")
 push_reaction("join",true,1,false,"function",join,"!join <channel> - Tells the bot to join the specified channel.")
+>>>>>>> .r9
 push_reaction("chatterbox",true,1,false,"dynamic","noisy = arglist[1]","!chatterbox <0|1> - Toggles random bot chat (unimplemented)")
-push_reaction("rename",true,1,false,"function",set_nick,"!rename <nickname> - Renames the bot to specified nick.")
+push_reaction("rename",true,1,false,"function",core.set_nick,"!rename <nickname> - Renames the bot to specified nick.")
 push_reaction("setpass",true,1,false,"dynamic","masterpass = arglist[1]")
 push_reaction("load_module",true,1,false,"function",require_mod,"!load_module <module name> - Loads specified module.")
 push_reaction("colormode",true,1,false,"dynamic","color_mode = tonumber(arglist[1])")
-push_reaction("help",false,1,false,"function",get_help,"Retrieves help for given command.")
+push_reaction("help",false,1,false,"function",core.get_help,"Retrieves help for given command.")
