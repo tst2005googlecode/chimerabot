@@ -52,12 +52,15 @@ function user_hook(indata)
 	end
 	
 	if indata.command == "PART" then
-		tchan = indata.target
 		tnick = mask_to_nick(indata.source)
-
-		for tchan,dat in pairs(chandata) do
-			if type(chandata[tchan][tnick]) == "table" then 
-					chandata[tchan][tnick] = nil
+		tchan = indata.target
+		if string.lower(tnick) == string.lower(nickname) then
+			chandata[tchan] = nil
+		else
+			for tchan,dat in pairs(chandata) do
+				if type(chandata[tchan][tnick]) == "table" then 
+						chandata[tchan][tnick] = nil
+				end
 			end
 		end
 	end
@@ -138,13 +141,13 @@ function user_hook(indata)
 		end
 	end
 	
-	if indata.command == "376" and join_on_connect then join(join_on_connect) end
+	if indata.command == "376" and join_on_connect then core.join(join_on_connect) end
 	
 	if indata.command == "433" then 
 		print("== Nick taken. Appending _")
 		nickname = nickname .. "_"
-		set_nick(nickname)
-		set_trigger("renick",10,function () nickname = string.sub(nickname,1,#nickname - 1); set_nick(nickname) end, "die")
+		core.set_nick(nickname)
+		set_trigger("renick",10,function () nickname = string.sub(nickname,1,#nickname - 1); core.set_nick(nickname) end, "die")
 	end
 	
 	

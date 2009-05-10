@@ -22,11 +22,28 @@ verbose_mode = 0
 hook_list = {}
 module_list = {}
 module_list.current = nil
+<<<<<<< .mine
+module_list['dynamic'] = {}
+=======
+socket_list = {}
+>>>>>>> .r9
+
+<<<<<<< .mine
+reaction = nil
+reaction = {}
+=======
+alive = true
+>>>>>>> .r9
+
+<<<<<<< .mine
 socket_list = {}
 
 alive = true
 
 --[[CTCP Stuff:
+=======
+--[[CTCP Stuff:
+>>>>>>> .r9
 There is alot of misnomer here, but I don't feel like fixing yet.
 You can pass the ctcp_color function either a single color (sets only foreground)
 or two colors (sets fore and back).  The func returns the required string to 
@@ -67,6 +84,20 @@ function block_till_connect()
 		end
 		
 	end
+<<<<<<< .mine
+	tcpsock:settimeout(0)
+	--------------------Need this---------------------------
+	require_mod('corefunc')
+	require_mod('timing')
+	require_mod('usertable')
+	---I want this to load on startup because I'm lazy------
+	require_mod('chanadmin')
+	require_mod('advanced')
+	require_mod('web')
+	require_mod("tablesave")
+	--------------------------------------------------------
+	
+=======
 	tcpsock:settimeout(0)
 	--------------------Need this---------------------------
 	require_mod('corefunc')
@@ -77,6 +108,7 @@ function block_till_connect()
 	require_mod('advanced')
 	require_mod('web')
 	--------------------------------------------------------
+>>>>>>> .r9
 
 
 end
@@ -143,6 +175,39 @@ function load_module(mname)
 	module_list.current = mhold
 end
 
+function unload_module(mname)
+
+	local mhold = module_list.current
+	module_list.current = mname
+	print("Unloading module " .. mname .. "...")
+	
+	if type(module_list[module_list.current]) ~= "table" then
+		echo(ctcp_color(12) .. "== " .. mname .. " is not a loaded module.")
+	else
+		for k,v in pairs(module_list[module_list.current]) do
+			for i,v in ipairs(reaction) do
+				if k == v.command then table.remove(reaction,i) end
+			end
+		end
+		
+		nullstr = module_list[module_list.current].namespace .. " = nil"
+		callstate, callerror = pcall(loadstring(loadstr), function () end) 
+		if callstate == false then 
+			print("ERROR: ".. callerror)
+			echo(ctcp_color(1,4) .. ctcp.underline ..  "ERROR:"	.. ctcp.plain .. " " .. callerror) 
+			module_list[module_list.current] = nil
+			echo(ctcp_color(12) .. "== Module " .. mname .. " partially unloaded.")
+		else
+			echo(ctcp_color(12) .. "== Module " .. mname .. " unloaded fully.")
+		end
+		
+		module_list[module_list.current] = nil
+	end
+
+
+	module_list.current = mhold
+end
+
 --Loads a module only if it hasn't been loaded yet.
 function require_mod(modname)
 	if module_list[modname] == nil then 
@@ -152,7 +217,43 @@ function require_mod(modname)
 	end
 end
 
+<<<<<<< .mine
+function allocate_namespace(nam)
+	module_list[module_list.current].namespace = nam
+end
+=======
+>>>>>>> .r9
 
+<<<<<<< .mine
+--Pushes a reaction onto the table.
+function push_reaction(comd, needauth, argnum, passlft, cmdtyp, exestring, help)
+	toadd = {}
+	toadd = {
+		command = comd,
+		args = argnum,
+		passleft = passlft,
+		cmdtype = cmdtyp,
+		link = exestring,
+		auth = needauth
+		}
+	help = help or "No help available for this command."
+	table.insert(reaction,toadd)
+	module_list[module_list.current][comd] = help
+end
+=======
+--Main logic loop here
+function run_logic()
+	
+	while(alive==true) do
+		run_bot()
+		handle_timing()
+		for i,v in ipairs(hook_list) do	if v.target == "cycle" then v.link() end end --hook caller
+	end
+	
+end
+>>>>>>> .r9
+
+<<<<<<< .mine
 --Main logic loop here
 function run_logic()
 	
@@ -165,6 +266,9 @@ function run_logic()
 end
 
 
+=======
+
+>>>>>>> .r9
 --I will make this stuff useful later.  For now, it is not worth
 --looking at.
 chat = {}
@@ -180,6 +284,17 @@ function run_bot()
 	--If content exists, lets process it.
 	if inlin ~= nil then 
 		
+<<<<<<< .mine
+		--Logs the bot in, will make less hackish later.
+		if string.find(inlin, "*** Found your hostname") then
+			push("USER " .. nickname .. " 8 * :" .. nickname)
+			push("NICK " .. nickname)
+			print("==Logged in==")
+			
+		end
+		--Chop line up into components.
+		chop = core.slice(inlin)
+=======
 		--Logs the bot in, will make less hackish later.
 		if string.find(inlin, "*** Found your hostname") then
 			push("USER " .. nickname .. " 8 * :" .. nickname)
@@ -188,7 +303,19 @@ function run_bot()
 		end
 		--Chop line up into components.
 		chop = slice(inlin)
+>>>>>>> .r9
 		
+<<<<<<< .mine
+		if verbose_mode == 1 then print(inlin) end
+		
+		--Will relocate this later.  Keeps bot alive on server.
+		if chop.source == "PING" then 
+			push("PONG " .. chop.text) 
+		end
+		
+		if string.sub(chop.text,1,1) == "!" then 
+			core.handle_cmd(chop.text, chop.target, chop.source) 
+=======
 		if verbose_mode == 1 then print(inline) end
 		
 		--Will relocate this later.  Keeps bot alive on server.
@@ -198,10 +325,26 @@ function run_bot()
 		
 		if string.sub(chop.text,1,1) == "!" then 
 			handle_cmd(chop.text, chop.target, chop.source) 
+>>>>>>> .r9
 		else
+<<<<<<< .mine
+			core.parsechat(chop.text, chop.target, chop.source)
+		end
+=======
 			parsechat(chop.text, chop.target, chop.source)
 		end
+>>>>>>> .r9
 
+<<<<<<< .mine
+		for i,v in ipairs(hook_list) do	if v.target == "parse_raw" then v.link(chop) end end --hook caller
+	
+	else
+		--Otherwise our connection got dumped.  If this is so, start handling it.
+		if err == 'closed' then 
+			print('====DISCONNECTED====')
+			
+			block_till_connect()
+=======
 		for i,v in ipairs(hook_list) do	if v.target == "parse_raw" then v.link(chop) end end --hook caller
 	
 	else
@@ -209,6 +352,7 @@ function run_bot()
 		if err == 'closed' then 
 			print('====DISCONNECTED====')
 			block_till_connect()
+>>>>>>> .r9
 		end
 	end
 	

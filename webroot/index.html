@@ -1,3 +1,53 @@
+<<<<<<< .mine
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<!--So i herd u liek ugly coed-->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title> [ CHIMERA ] - - Web Backend</title>
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="default.css" />
+	</head>
+
+	<body bgcolor="#333333">
+
+		<table width=800 align="center">
+			<tr>
+				<td>
+					<img src="chimera_head.png" alt="LOLHI">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<h1> Testing random crap </h1>
+					
+					<form action="/index.html" method="post" enctype="text/plain">
+					<select name="d_channel">
+					<lua>
+						for chan,v in pairs(chandata) do
+							client:send('<option>' .. chan .. '</option>\n')
+						end
+						client:send('<option>' .. server .. '</option>\n')
+					</lua>
+					</select>
+					Say: <input type="textfield" name="d_sayline" size="80"/><br />
+					<input type="submit" value="Submit" />
+					
+					</form>
+					
+					Sup random guy... so i herd u like inline lua...
+					<lua> client:send("LSADJLASJDLKASJLDKJALSKDJLKASJD") </lua>
+					<hr />
+					<h2>Chat Log</h2><hr />
+					<lua> dump_log(client) </lua>
+					<hr />
+					<lua> dump_channels(client)	</lua>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>=======
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -30,4 +80,4 @@
 			</tr>
 		</table>
 	</body>
-</html>
+</html>>>>>>>> .r9
