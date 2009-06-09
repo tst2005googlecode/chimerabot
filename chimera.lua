@@ -2,7 +2,7 @@ END = "\r\n"
 socket = require("socket")
 tcpsock = socket.tcp()
 
-bot_path = "" --Path to bot dir. EDIT THIS YO
+bot_path = "C:/Users/anthony/Code/ChimeraBot/" --Path to bot dir. EDIT THIS YO
 
 server = "irc.toribash.com"
 nickname = "Chimera"
