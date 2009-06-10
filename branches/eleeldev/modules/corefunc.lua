@@ -178,7 +178,9 @@ end
 function core.do_auth(pass)
 
 	if pass == masterpass then 
-		table.insert(authlist,mask_to_end(source)) 
+		table.insert(authlist,mask_to_end(source))
+		io.output("authlist.txt") --untested, saves
+		io.write(mask_to_end(source), "\n") --authorized users to a file
 		print("== " .. mask_to_nick(source) .. " authorized.")
 		echo(ctcp_color(12) .. "== " .. mask_to_nick(source) .. " authorized.")
 	else
@@ -192,6 +194,8 @@ function core.force_auth(nick)
 	local v = find_user(nick,chan)
 	if v then
 		table.insert(authlist,v.mask)
+		io.output("authlist.txt") --untested, saves
+		io.write(mask_to_end(source), "\n") --authorized users to a file
 		print("== " .. v.mask .. " authorized.")
 		echo(ctcp_color(12) .. "== " .. v.mask .. " authorized.")
 	else
