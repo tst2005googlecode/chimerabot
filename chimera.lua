@@ -2,6 +2,16 @@ END = "\r\n"
 socket = require("socket")
 tcpsock = socket.tcp()
 
+--[[
+
+	So I need some motivation.
+	ELEELETH: GET UR ASS INTO GEAR ETC.
+	MAKE NON HACKY TORIBASH BOT, IN TRUE LUA.
+	MAKE SERVER BOT FOR BROMOTEAM, MODE CHANGER ETC
+	FUCK GET THIS SHIT DONE ELEELETH GODDAMNIT.
+
+]]--
+
 bot_path = "C:/Users/anthony/Code/ChimeraBot/" --Path to bot dir. EDIT THIS YO
 
 server = "irc.toribash.com"
@@ -46,15 +56,15 @@ end
 --[[CTCP Stuff:
 There is alot of misnomer here, but I don't feel like fixing yet.
 You can pass the ctcp_color function either a single color (sets only foreground)
-or two colors (sets fore and back).  The func returns the required string to 
-change the color in an IRC string.  The table members are for changing other 
+or two colors (sets fore and back).  The func returns the required string to
+change the color in an IRC string.  The table members are for changing other
 things relating to appearance.  The only properly-named thing in this table is
 ctcp.norm, which represents the ansi char needed for ctcp replies and requests.
 ]]--
 ctcp = {}
-function ctcp_color(a,b) 
+function ctcp_color(a,b)
 	toret = ""
-	if color_mode == 1 then 
+	if color_mode == 1 then
 		toret = string.char(3) .. a
 		if b ~= nil then toret = toret .. "," .. b end
 	end
@@ -76,13 +86,13 @@ function block_till_connect()
 		tcpsock = socket.tcp()
 		tcpsock:settimeout(5)
 		print("Attempting to connect (retry in 5 seconds)...")
-		result,err = tcpsock:connect(server, 6667) 
+		result,err = tcpsock:connect(server, 6667)
 		result = result or ""
-		if err then 
-			print("Error> " .. result .. " " .. err) 
+		if err then
+			print("Error> " .. result .. " " .. err)
 			socket.sleep(5)
 		end
-		
+
 	end
 	tcpsock:settimeout(0)
 	--------------------Need this---------------------------
@@ -95,7 +105,7 @@ function block_till_connect()
 	require_mod('web')
 	require_mod("tablesave")
 	--------------------------------------------------------
-	
+
 
 end
 
@@ -114,12 +124,12 @@ end
 --Pushes out a line of text to the server and add the proper terminators (CRLF)
 function push(tosend) tcpsock:send(tosend .. END) end
 
---Echos out a string to specified channel or nick.  If no target specified, defaults to last 
+--Echos out a string to specified channel or nick.  If no target specified, defaults to last
 --source bot recieved text from.
-function echo(apass, sendto) 
+function echo(apass, sendto)
 	if string.lower(target) == string.lower(nickname) then newtarget = mask_to_nick(source) else newtarget = target end
 	sendto = sendto or newtarget
-	push("PRIVMSG " .. sendto .. " " .. apass) 
+	push("PRIVMSG " .. sendto .. " " .. apass)
 end
 
 --Add a function hook.  See modules for usage.
@@ -131,12 +141,12 @@ end
 --Removes specified hook(s)
 function remove_hook(tag)
 	for i,v in ipairs(hook_list) do
-		if v.name == tag then 
-			table.remove(hook_list,i) 
+		if v.name == tag then
+			table.remove(hook_list,i)
 		end
 	end
 end
-		
+
 --Loads a module. I reccomend using require_mod instead so you don't have a chance
 --of doubling up.
 function load_module(mname)
@@ -148,16 +158,16 @@ function load_module(mname)
 	module_path = bot_path .. "modules/" .. mname .. ".lua"
 	loadstr = "dofile(module_path)"
 
-	callstate, callerror = pcall(loadstring(loadstr), function () end) 
-	
-	if callstate == false then 
+	callstate, callerror = pcall(loadstring(loadstr), function () end)
+
+	if callstate == false then
 		print("ERROR: ".. callerror)
-		echo(ctcp_color(1,4) .. ctcp.underline ..  "ERROR:"	.. ctcp.plain .. " " .. callerror) 
+		echo(ctcp_color(1,4) .. ctcp.underline ..  "ERROR:"	.. ctcp.plain .. " " .. callerror)
 		module_list[module_list.current] = nil
 	else
 		echo(ctcp_color(12) .. "== Module " .. mname .. " loaded.")
 	end
-	
+
 	module_list.current = mhold
 end
 
@@ -166,7 +176,7 @@ function unload_module(mname)
 	local mhold = module_list.current
 	module_list.current = mname
 	print("Unloading module " .. mname .. "...")
-	
+
 	if type(module_list[module_list.current]) ~= "table" then
 		echo(ctcp_color(12) .. "== " .. mname .. " is not a loaded module.")
 	else
@@ -175,18 +185,18 @@ function unload_module(mname)
 				if k == v.command then table.remove(reaction,i) end
 			end
 		end
-		
+
 		nullstr = module_list[module_list.current].namespace .. " = nil"
-		callstate, callerror = pcall(loadstring(loadstr), function () end) 
-		if callstate == false then 
+		callstate, callerror = pcall(loadstring(loadstr), function () end)
+		if callstate == false then
 			print("ERROR: ".. callerror)
-			echo(ctcp_color(1,4) .. ctcp.underline ..  "ERROR:"	.. ctcp.plain .. " " .. callerror) 
+			echo(ctcp_color(1,4) .. ctcp.underline ..  "ERROR:"	.. ctcp.plain .. " " .. callerror)
 			module_list[module_list.current] = nil
 			echo(ctcp_color(12) .. "== Module " .. mname .. " partially unloaded.")
 		else
 			echo(ctcp_color(12) .. "== Module " .. mname .. " unloaded fully.")
 		end
-		
+
 		module_list[module_list.current] = nil
 	end
 
@@ -196,7 +206,7 @@ end
 
 --Loads a module only if it hasn't been loaded yet.
 function require_mod(modname)
-	if module_list[modname] == nil then 
+	if module_list[modname] == nil then
 		load_module(modname)
 	else
 		echo(ctcp_color(12) .. "== Module " .. modname .. " already loaded.")
@@ -225,13 +235,13 @@ end
 
 --Main logic loop here
 function run_logic()
-	
+
 	while(alive==true) do
 		run_bot()
 		handle_timing()
 		for i,v in ipairs(hook_list) do	if v.target == "cycle" then v.link() end end --hook caller
 	end
-	
+
 end
 
 
@@ -244,46 +254,46 @@ chat[2] = {	trigger = "o/" ,place = "start", reply = "o/*\\o"}
 --Process all the IRC stuff.
 function run_bot()
 	--Grab a line
-	
+
 	inlin,err = tcpsock:receive('*l')
-	
+
 	--If content exists, lets process it.
-	if inlin ~= nil then 
-		
+	if inlin ~= nil then
+
 		--Logs the bot in, will make less hackish later.
 		if string.find(inlin, "*** Found your hostname") then
 			push("USER " .. nickname .. " 8 * :" .. nickname)
 			push("NICK " .. nickname)
 			print("==Logged in==")
-			
+
 		end
 		--Chop line up into components.
 		chop = core.slice(inlin)
-		
+
 		if verbose_mode == 1 then print(inlin) end
-		
+
 		--Will relocate this later.  Keeps bot alive on server.
-		if chop.source == "PING" then 
-			push("PONG " .. chop.text) 
+		if chop.source == "PING" then
+			push("PONG " .. chop.text)
 		end
-		
-		if string.sub(chop.text,1,1) == "!" then 
-			core.handle_cmd(chop.text, chop.target, chop.source) 
+
+		if string.sub(chop.text,1,1) == "!" then
+			core.handle_cmd(chop.text, chop.target, chop.source)
 		else
 			core.parsechat(chop.text, chop.target, chop.source)
 		end
 
 		for i,v in ipairs(hook_list) do	if v.target == "parse_raw" then v.link(chop) end end --hook caller
-	
+
 	else
 		--Otherwise our connection got dumped.  If this is so, start handling it.
-		if err == 'closed' then 
+		if err == 'closed' then
 			print('====DISCONNECTED====')
-			
+
 			block_till_connect()
 		end
 	end
-	
+
 	inlin = nil
 end
 
