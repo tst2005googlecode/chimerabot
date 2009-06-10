@@ -33,6 +33,16 @@ socket_list = {}
 
 alive = true
 
+--	Read in auths from authlist.txt, untested. (sorry newb ;o <3
+
+io.input("modules/authlist.txt")
+
+for line in io.lines() do
+	table.insert(authlist, line)
+end
+
+-- End untested.
+
 --[[CTCP Stuff:
 There is alot of misnomer here, but I don't feel like fixing yet.
 You can pass the ctcp_color function either a single color (sets only foreground)
