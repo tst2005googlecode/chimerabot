@@ -1,0 +1,19 @@
+body {
+margin: 0;
+padding: 0;
+font-family : Arial, Helvetica, sans-serif;
+font-size : large;
+}
+
+table { border-width: 7px; 
+border-style: solid; 
+border-color: #FFFF00;
+background-color: #CCCCCC; 
+color: black; 
+font-size: 12pt; 
+} 
+
+td { border-width: medium; 
+border-style: dashed; 
+border-color: #9999FF;
+padding: 10px; }
