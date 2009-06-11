@@ -5,10 +5,10 @@ tcpsock = socket.tcp()
 bot_path = "" --Path to bot dir. EDIT THIS YO
 
 server = "irc.toribash.com"
-nickname = "Chimera"
-masterpass = "9001"
+nickname = "bRobot"
+masterpass = "oompaloompa"
 masterauth = "1337-BC651D7C.nctv.com"
-join_on_connect = "#test2"
+join_on_connect = "#bromoteam"
 
 startuptime = os.time()
 
@@ -84,6 +84,8 @@ function block_till_connect()
 	require_mod('advanced')
 	require_mod('web')
 	require_mod("tablesave")
+	require_mod('bromo')
+	
 	--------------------------------------------------------
 	
 
