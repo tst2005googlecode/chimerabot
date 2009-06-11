@@ -246,5 +246,6 @@ push_reaction("chatterbox",true,1,false,"dynamic","noisy = arglist[1]","!chatter
 push_reaction("rename",true,1,false,"function",core.set_nick,"!rename <nickname> - Renames the bot to specified nick.")
 push_reaction("setpass",true,1,false,"dynamic","masterpass = arglist[1]")
 push_reaction("load_module",true,1,false,"function",require_mod,"!load_module <module name> - Loads specified module.")
+push_reaction("unload_module",true,1,false,"function",unload_module,"!unload_module <module name> - Unloads specified module.")
 push_reaction("colormode",true,1,false,"dynamic","color_mode = tonumber(arglist[1])")
 push_reaction("help",false,1,false,"function",core.get_help,"Retrieves help for given command.")

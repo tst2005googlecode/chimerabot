@@ -162,6 +162,8 @@ function ai.learn(line)
 end
 
 function ai.construct(number)
+	number = tonumber(number)
+	if number == nil then return end
 	local outline = ""
 	local currword = ""
 	--THIS IS THE FUN PART LOL
